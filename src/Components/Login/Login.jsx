@@ -1,4 +1,7 @@
-import { sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import auth from "../../Firebase/Firebase.config";
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
@@ -6,7 +9,7 @@ import { Link } from "react-router-dom";
 const Login = () => {
   const [loginError, setLoginError] = useState("");
   const [success, setSuccess] = useState("");
-  const emailRef =useRef(null)
+  const emailRef = useRef(null);
   const handleLogin = (e) => {
     e.preventDefault();
     const email = e.target.email.value;
@@ -18,32 +21,37 @@ const Login = () => {
     signInWithEmailAndPassword(auth, email, password)
       .then((result) => {
         console.log(result.user);
-        setSuccess("Accout login successfully");
+        if (result.user.emailVerified) {
+          setSuccess("Accout login successfully");
+        }else{
+          alert('Please verify your email address')
+        }
       })
       .catch((error) => {
         console.error(error);
         setLoginError("Information not correct");
       });
   };
-  const handleForgetPasword =()=>{
-    const email=emailRef.current.value;
-    if(!email){
-        console.log('Please provide an email',emailRef.current.value);
-        return
-    }else if(!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)){
-        console.log('please write a valid email');
-        return
+  const handleForgetPasword = () => {
+    const email = emailRef.current.value;
+    if (!email) {
+      console.log("Please provide an email", emailRef.current.value);
+      return;
+    } else if (
+      !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)
+    ) {
+      console.log("please write a valid email");
+      return;
     }
     // Send validatio email
-    sendPasswordResetEmail(auth,email)
-    .then(()=>{
-        alert('please check your email')
-    })
-    .catch(error=>{
+    sendPasswordResetEmail(auth, email)
+      .then(() => {
+        alert("please check your email");
+      })
+      .catch((error) => {
         console.log(error);
-    })
-
-  }
+      });
+  };
   return (
     <>
       <div className="flex justify-center">
@@ -70,7 +78,8 @@ const Login = () => {
               <div>
                 <div className="flex justify-between mb-2">
                   <label className="text-sm">Password</label>
-                  <a onClick={handleForgetPasword}
+                  <a
+                    onClick={handleForgetPasword}
                     rel="noopener noreferrer"
                     href="#"
                     className="text-xs hover:underline dark:text-gray-600"
@@ -97,7 +106,7 @@ const Login = () => {
               <p className="px-6 text-sm text-center dark:text-gray-600">
                 Donot have an account yet?
                 <Link
-                  to='/register'
+                  to="/register"
                   className="hover:underline dark:text-violet-600"
                 >
                   Sign up
